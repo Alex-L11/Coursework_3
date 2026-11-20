@@ -2,10 +2,10 @@ import psycopg2
 
 from src.api_connector import GetCoordinate, InfoPlanes
 from src.config import COUNTRIES, db_config
-from src.connect_bd import DBConnector
 
 
 def create_database(dbname):
+    """Создает базу данных"""
     conn = psycopg2.connect(dbname="postgres", **db_config)
     cursor = conn.cursor()
     conn.autocommit = True
@@ -18,6 +18,7 @@ def create_database(dbname):
 
 
 def create_tables(connector):
+    """Создает таблицы, согласно полученным данным из API сервисов"""
     connector.execute(
         """CREATE TABLE IF NOT EXISTS countries (
             id SERIAL PRIMARY KEY,
@@ -41,6 +42,7 @@ def create_tables(connector):
 
 
 def insert_data(connector):
+    """Вставляет данные в таблицы"""
     for country in COUNTRIES:
         result = connector.fetch_one(
             """
@@ -78,17 +80,3 @@ def insert_data(connector):
                 )
         else:
             print(f"Страна {country} не добавилась или уже существует")
-
-
-if __name__ == "__main__":
-    db_name = "course_3_test"
-    create_database(db_name)
-    test_config = {**db_config, "dbname": db_name}
-    connector = DBConnector(test_config)
-    create_tables(connector)
-    insert_data(connector)
-
-    table_result = connector.fetch_all("SELECT * FROM aircraft LIMIT 1")
-    countries = connector.fetch_all("SELECT * FROM countries")
-    print(table_result)
-    print(countries)
