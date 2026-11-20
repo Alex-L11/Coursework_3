@@ -37,7 +37,6 @@ class DBConnector:
                 conn.rollback()
                 raise RuntimeError(f"Нарушено соединение с сервером: {o}") from o
 
-
     def fetch_all(self, sql: str, params: tuple = ()) -> list:
         conn = self.connect()
 
